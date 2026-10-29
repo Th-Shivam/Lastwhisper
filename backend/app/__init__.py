@@ -1,0 +1,2 @@
+"""LastWhisper local API."""
+
