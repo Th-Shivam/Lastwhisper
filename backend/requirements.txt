@@ -1,8 +1,13 @@
-fastapi==0.115.6
+--extra-index-url https://download.pytorch.org/whl/cpu
+-c constraints-cpu.txt
+
+fastapi==0.162.0
+starlette==1.10.0
 uvicorn[standard]==0.34.0
 sqlalchemy==2.0.36
 pydantic-settings==2.7.0
-python-multipart==0.0.20
-faster-whisper==1.1.1
-pytest==8.3.4
-
+python-multipart==0.0.32
+faster-whisper==1.2.1
+av==16.1.0
+torch==2.15.0+cpu; sys_platform == "linux" and platform_machine == "x86_64"
+sentence-transformers==5.6.1
