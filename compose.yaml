@@ -1,0 +1,45 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: sqlite:////data/lastwhisper.sqlite3
+      STORAGE_DIR: /data/audio
+      ALLOWED_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      WHISPER_MODEL: ${WHISPER_MODEL:-base}
+      WHISPER_REVISION: ${WHISPER_REVISION:-ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66}
+      WHISPER_DEVICE: cpu
+      WHISPER_COMPUTE_TYPE: int8
+      WHISPER_DOWNLOAD_ROOT: /models/whisper
+      WHISPER_LOCAL_FILES_ONLY: ${WHISPER_LOCAL_FILES_ONLY:-false}
+      EMBEDDING_MODEL: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+      EMBEDDING_REVISION: e8f8c211226b894fcb81acc59f3b34ba3efd5f42
+      EMBEDDING_DEVICE: cpu
+      EMBEDDING_CACHE_DIR: /models/embeddings
+      EMBEDDING_LOCAL_FILES_ONLY: ${EMBEDDING_LOCAL_FILES_ONLY:-false}
+      HF_HUB_DISABLE_XET: "true"
+    volumes:
+      - lastwhisper_data:/data
+      - lastwhisper_models:/models
+    expose:
+      - "8000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_URL: /api
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${LASTWHISPER_PORT:-8080}:80"
+
+volumes:
+  lastwhisper_data:
+  lastwhisper_models:
